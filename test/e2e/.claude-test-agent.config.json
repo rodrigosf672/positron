@@ -1,0 +1,57 @@
+{
+  "name": "Positron E2E Test Agent",
+  "version": "1.0.0",
+  "description": "Autonomous agent for test development, CI monitoring, and self-healing",
+
+  "monitoring": {
+    "enabled": true,
+    "checkIntervalSeconds": 300,
+    "ciProviders": ["github-actions"],
+    "notifyOnFailure": true,
+    "autoHealOnFailure": true
+  },
+
+  "healing": {
+    "enabled": true,
+    "maxAttempts": 3,
+    "strategies": [
+      "increase-timeout",
+      "update-selector",
+      "add-wait-condition",
+      "retry-mechanism",
+      "update-page-object"
+    ],
+    "requireApprovalForChanges": false
+  },
+
+  "documentation": {
+    "autoUpdate": true,
+    "pomDocPath": "/Users/rodrigosilvaferreira/POSITRON_POM_DOCUMENTATION.md",
+    "backupBeforeUpdate": true,
+    "commitChanges": true
+  },
+
+  "testing": {
+    "defaultProject": "e2e-electron",
+    "retryFailedTests": true,
+    "maxRetries": 2,
+    "captureVideo": "retain-on-failure",
+    "captureTrace": "retain-on-failure"
+  },
+
+  "ciIntegration": {
+    "github": {
+      "enabled": true,
+      "repo": "posit-dev/positron",
+      "workflows": ["e2e-tests.yml"],
+      "checkPRs": true,
+      "commentOnPR": true
+    }
+  },
+
+  "logging": {
+    "level": "info",
+    "logFile": "test/e2e/.agent-logs/test-agent.log",
+    "includeTimestamps": true
+  }
+}

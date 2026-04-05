@@ -1,0 +1,472 @@
+{
+	"workflows": {
+		"python-development": {
+			"name": "Python Development Workflow",
+			"description": "Complete Python development cycle from session start to debugging",
+			"requiredFixtures": ["app", "python"],
+			"estimatedDuration": "5 minutes",
+			"steps": [
+				{
+					"name": "Start Python session",
+					"pageObject": "sessions",
+					"method": "start",
+					"params": ["python"],
+					"validation": {
+						"type": "state-matches",
+						"pageObject": "console",
+						"method": "waitForReady",
+						"params": [">>>"]
+					}
+				},
+				{
+					"name": "Create scalar variable",
+					"pageObject": "console",
+					"method": "executeCode",
+					"params": ["Python", "x = 42"],
+					"validation": {
+						"type": "element-visible",
+						"pageObject": "variables",
+						"method": "waitForVariableRow",
+						"params": ["x"]
+					}
+				},
+				{
+					"name": "Verify scalar value",
+					"pageObject": "variables",
+					"method": "expectVariableToBe",
+					"params": ["x", "42"]
+				},
+				{
+					"name": "Create list variable",
+					"pageObject": "console",
+					"method": "executeCode",
+					"params": ["Python", "my_list = [1, 2, 3, 4, 5]"],
+					"validation": {
+						"type": "element-visible",
+						"pageObject": "variables",
+						"method": "waitForVariableRow",
+						"params": ["my_list"]
+					}
+				},
+				{
+					"name": "Create DataFrame",
+					"pageObject": "console",
+					"method": "executeCode",
+					"params": ["Python", "import pandas as pd\ndf = pd.DataFrame({'A': [1, 2, 3], 'B': [4, 5, 6]})"],
+					"validation": {
+						"type": "element-visible",
+						"pageObject": "variables",
+						"method": "waitForVariableRow",
+						"params": ["df"]
+					}
+				},
+				{
+					"name": "Open DataFrame in Data Explorer",
+					"pageObject": "variables",
+					"method": "doubleClickVariableRow",
+					"params": ["df"],
+					"validation": {
+						"type": "state-matches",
+						"pageObject": "dataExplorer",
+						"method": "waitForIdle",
+						"params": []
+					}
+				},
+				{
+					"name": "Verify Data Explorer content",
+					"pageObject": "dataExplorer",
+					"method": "grid.verifyTableDataLength",
+					"params": [3]
+				}
+			]
+		},
+
+		"data-explorer-deep-dive": {
+			"name": "Data Explorer Deep Dive",
+			"description": "Comprehensive testing of Data Explorer features",
+			"requiredFixtures": ["app", "python"],
+			"estimatedDuration": "15 minutes",
+			"steps": [
+				{
+					"name": "Setup: Create large DataFrame",
+					"pageObject": "console",
+					"method": "executeCode",
+					"params": ["Python", "import pandas as pd\nimport numpy as np\ndf = pd.DataFrame({\n	'Name': [f'Person_{i}' for i in range(100)],\n	'Age': np.random.randint(20, 60, 100),\n	'Score': np.random.rand(100) * 100\n})"]
+				},
+				{
+					"name": "Open in Data Explorer",
+					"pageObject": "variables",
+					"method": "doubleClickVariableRow",
+					"params": ["df"],
+					"validation": {
+						"type": "state-matches",
+						"pageObject": "dataExplorer",
+						"method": "waitForIdle",
+						"params": []
+					}
+				},
+				{
+					"name": "Test column sorting ascending",
+					"pageObject": "dataExplorer",
+					"method": "selectColumnHeader",
+					"params": ["Age"],
+					"validation": {
+						"type": "state-matches",
+						"pageObject": "dataExplorer",
+						"method": "waitForIdle",
+						"params": []
+					}
+				},
+				{
+					"name": "Test column sorting descending",
+					"pageObject": "dataExplorer",
+					"method": "selectColumnHeader",
+					"params": ["Age"],
+					"validation": {
+						"type": "state-matches",
+						"pageObject": "dataExplorer",
+						"method": "waitForIdle",
+						"params": []
+					}
+				},
+				{
+					"name": "Test column filtering",
+					"pageObject": "dataExplorer",
+					"method": "filters.setFilter",
+					"params": ["Age", ">", "30"]
+				},
+				{
+					"name": "Verify filter applied",
+					"pageObject": "dataExplorer",
+					"method": "grid.verifyTableDataLength",
+					"params": ["<100"],
+					"note": "Should be less than 100 rows after filtering"
+				},
+				{
+					"name": "Clear filters",
+					"pageObject": "dataExplorer",
+					"method": "filters.clearAllFilters",
+					"params": []
+				},
+				{
+					"name": "Test summary panel",
+					"pageObject": "dataExplorer",
+					"method": "editorActionBar.clickButton",
+					"params": ["Summary Panel"]
+				},
+				{
+					"name": "Test convert to code",
+					"pageObject": "dataExplorer",
+					"method": "editorActionBar.clickButton",
+					"params": ["Convert to Code"]
+				}
+			]
+		},
+
+		"notebook-workflow": {
+			"name": "Notebook Workflow",
+			"description": "Complete notebook creation and execution cycle",
+			"requiredFixtures": ["app"],
+			"estimatedDuration": "8 minutes",
+			"steps": [
+				{
+					"name": "Create new notebook",
+					"pageObject": "quickaccess",
+					"method": "runCommand",
+					"params": ["ipynb.newUntitledIpynb"]
+				},
+				{
+					"name": "Select Python kernel",
+					"pageObject": "notebooks",
+					"method": "selectInterpreter",
+					"params": ["Python"]
+				},
+				{
+					"name": "Add code to first cell",
+					"pageObject": "notebooks",
+					"method": "addCodeToCellAtIndex",
+					"params": [0, "x = 42\nprint(f'x = {x}')"]
+				},
+				{
+					"name": "Execute first cell",
+					"pageObject": "notebooks",
+					"method": "executeActiveCell",
+					"params": []
+				},
+				{
+					"name": "Verify cell output",
+					"pageObject": "notebooks",
+					"method": "assertCellOutput",
+					"params": ["x = 42", 0]
+				},
+				{
+					"name": "Insert new cell below",
+					"pageObject": "notebooks",
+					"method": "insertNotebookCell",
+					"params": ["code"]
+				},
+				{
+					"name": "Add code to second cell",
+					"pageObject": "notebooks",
+					"method": "addCodeToCellAtIndex",
+					"params": [1, "import pandas as pd\ndf = pd.DataFrame({'A': [1,2,3]})"]
+				},
+				{
+					"name": "Execute second cell",
+					"pageObject": "notebooks",
+					"method": "executeActiveCell",
+					"params": []
+				},
+				{
+					"name": "Run all cells",
+					"pageObject": "notebooks",
+					"method": "runAllCells",
+					"params": []
+				}
+			]
+		},
+
+		"plots-visualization": {
+			"name": "Plots and Visualization",
+			"description": "Test plot generation and manipulation",
+			"requiredFixtures": ["app", "python"],
+			"estimatedDuration": "5 minutes",
+			"steps": [
+				{
+					"name": "Generate simple plot",
+					"pageObject": "console",
+					"method": "executeCode",
+					"params": ["Python", "import matplotlib.pyplot as plt\nplt.plot([1,2,3,4])\nplt.show()"]
+				},
+				{
+					"name": "Wait for plot to appear",
+					"pageObject": "plots",
+					"method": "waitForCurrentPlot",
+					"params": []
+				},
+				{
+					"name": "Verify plot is visible",
+					"pageObject": "plots",
+					"method": "expectPlotToBe",
+					"params": ["visible"]
+				},
+				{
+					"name": "Generate second plot",
+					"pageObject": "console",
+					"method": "executeCode",
+					"params": ["Python", "plt.plot([4,3,2,1])\nplt.show()"]
+				},
+				{
+					"name": "Verify multiple plots",
+					"pageObject": "plots",
+					"method": "expectPlotThumbnailsCountToBe",
+					"params": [2]
+				},
+				{
+					"name": "Navigate between plots",
+					"pageObject": "plots",
+					"method": "clickNextPlotButton",
+					"params": []
+				},
+				{
+					"name": "Copy plot to clipboard",
+					"pageObject": "plots",
+					"method": "copyCurrentPlotToClipboard",
+					"params": []
+				},
+				{
+					"name": "Clear all plots",
+					"pageObject": "plots",
+					"method": "clearPlots",
+					"params": []
+				}
+			]
+		},
+
+		"console-stress-test": {
+			"name": "Console Stress Test",
+			"description": "Test console with heavy load and edge cases",
+			"requiredFixtures": ["app", "python"],
+			"estimatedDuration": "10 minutes",
+			"steps": [
+				{
+					"name": "Execute long-running computation",
+					"pageObject": "console",
+					"method": "executeCode",
+					"params": ["Python", "import time\nfor i in range(5):\n		 print(f'Step {i}')\n		 time.sleep(1)"],
+					"timeout": 10000
+				},
+				{
+					"name": "Test console interrupt",
+					"pageObject": "console",
+					"method": "executeCode",
+					"params": ["Python", "while True:\n		 pass"],
+					"note": "Will be interrupted"
+				},
+				{
+					"name": "Send interrupt",
+					"pageObject": "console",
+					"method": "sendInterrupt",
+					"params": []
+				},
+				{
+					"name": "Verify console responsive",
+					"pageObject": "console",
+					"method": "waitForReady",
+					"params": [">>>"]
+				},
+				{
+					"name": "Test large output",
+					"pageObject": "console",
+					"method": "executeCode",
+					"params": ["Python", "for i in range(1000):\n		 print(i)"]
+				},
+				{
+					"name": "Test special characters",
+					"pageObject": "console",
+					"method": "executeCode",
+					"params": ["Python", "print('Hello 世界 🌍')"]
+				},
+				{
+					"name": "Test error handling",
+					"pageObject": "console",
+					"method": "executeCode",
+					"params": ["Python", "1 / 0"]
+				},
+				{
+					"name": "Verify error output",
+					"pageObject": "console",
+					"method": "waitForConsoleContents",
+					"params": ["ZeroDivisionError"]
+				}
+			]
+		},
+
+		"session-management": {
+			"name": "Session Management",
+			"description": "Test session lifecycle and switching",
+			"requiredFixtures": ["app"],
+			"estimatedDuration": "7 minutes",
+			"steps": [
+				{
+					"name": "Start Python session",
+					"pageObject": "sessions",
+					"method": "start",
+					"params": ["python"]
+				},
+				{
+					"name": "Verify Python session active",
+					"pageObject": "sessions",
+					"method": "expectStatusToBe",
+					"params": ["__sessionId__", "idle"]
+				},
+				{
+					"name": "Start R session",
+					"pageObject": "sessions",
+					"method": "start",
+					"params": ["r"]
+				},
+				{
+					"name": "Verify multiple sessions",
+					"pageObject": "sessions",
+					"method": "expectSessionCountToBe",
+					"params": [2]
+				},
+				{
+					"name": "Switch to Python session",
+					"pageObject": "sessions",
+					"method": "switchToSession",
+					"params": ["python"]
+				},
+				{
+					"name": "Execute Python code",
+					"pageObject": "console",
+					"method": "executeCode",
+					"params": ["Python", "x = 'python'"]
+				},
+				{
+					"name": "Switch to R session",
+					"pageObject": "sessions",
+					"method": "switchToSession",
+					"params": ["r"]
+				},
+				{
+					"name": "Execute R code",
+					"pageObject": "console",
+					"method": "executeCode",
+					"params": ["R", "x <- 'r'"]
+				},
+				{
+					"name": "Restart Python session",
+					"pageObject": "sessions",
+					"method": "restart",
+					"params": ["__pythonSessionId__"]
+				}
+			]
+		},
+
+		"debugging-workflow": {
+			"name": "Debugging Workflow",
+			"description": "Test debugging features including breakpoints and stepping",
+			"requiredFixtures": ["app", "python"],
+			"estimatedDuration": "8 minutes",
+			"steps": [
+				{
+					"name": "Create Python file with function",
+					"pageObject": "console",
+					"method": "createFile",
+					"params": ["Python", "debug_test.py"]
+				},
+				{
+					"name": "Add code to file",
+					"pageObject": "editor",
+					"method": "type",
+					"params": ["def factorial(n):\n		 if n <= 1:\n				 return 1\n		 return n * factorial(n-1)\n\nresult = factorial(5)\nprint(result)"]
+				},
+				{
+					"name": "Set breakpoint on line 2",
+					"pageObject": "debug",
+					"method": "setBreakpointOnLine",
+					"params": [2]
+				},
+				{
+					"name": "Verify breakpoint set",
+					"pageObject": "debug",
+					"method": "expectBreakpointVerified",
+					"params": [0]
+				},
+				{
+					"name": "Start debugging",
+					"pageObject": "debug",
+					"method": "startDebugging",
+					"params": []
+				},
+				{
+					"name": "Step over",
+					"pageObject": "debug",
+					"method": "stepOver",
+					"params": []
+				},
+				{
+					"name": "Step into",
+					"pageObject": "debug",
+					"method": "stepInto",
+					"params": []
+				},
+				{
+					"name": "Continue execution",
+					"pageObject": "debug",
+					"method": "continue",
+					"params": []
+				}
+			]
+		}
+	},
+
+	"workflow-groups": {
+		"quick-smoke": ["python-development", "notebook-workflow"],
+		"data-focus": ["data-explorer-deep-dive", "plots-visualization"],
+		"stress": ["console-stress-test", "session-management"],
+		"comprehensive": ["python-development", "data-explorer-deep-dive", "notebook-workflow", "plots-visualization", "console-stress-test", "session-management", "debugging-workflow"]
+	}
+}

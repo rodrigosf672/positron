@@ -1,0 +1,17 @@
+Activate Sailor Mode: User Journey
+
+Workflow Group: quick-smoke
+Mode: user-journey
+Self-healing: Enabled
+Documentation updates: Enabled
+Test generation: Enabled
+
+Load the workflow group "quick-smoke" from sailor-mode/workflows.json.
+Execute each workflow in sequence:
+1. Execute each step using page objects
+2. Validate expected outcomes
+3. Record any deviations from expected behavior
+4. Self-heal on failures
+5. Generate regression tests
+
+Report progress and results.

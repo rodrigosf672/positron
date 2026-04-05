@@ -1,0 +1,153 @@
+{
+	"name": "Positron Sailor Mode",
+	"version": "1.0.0",
+	"description": "POM-based autonomous testing and exploration",
+
+	"modes": {
+		"deep-dive": {
+			"description": "Exhaustive testing of a single feature",
+			"maxDuration": 3600000,
+			"continueOnFailure": true,
+			"generateTests": true
+		},
+		"user-journey": {
+			"description": "Follow typical user workflows end-to-end",
+			"maxDuration": 1800000,
+			"continueOnFailure": false,
+			"generateTests": true
+		},
+		"stress-test": {
+			"description": "Test system under load and edge cases",
+			"maxDuration": 3600000,
+			"continueOnFailure": true,
+			"generateTests": true
+		},
+		"regression": {
+			"description": "Re-run previously failed scenarios",
+			"maxDuration": 1800000,
+			"continueOnFailure": false,
+			"generateTests": false
+		},
+		"fuzzing": {
+			"description": "Test unexpected inputs and edge cases",
+			"maxDuration": 3600000,
+			"continueOnFailure": true,
+			"generateTests": true
+		}
+	},
+
+	"execution": {
+		"parallelWorkflows": false,
+		"timeoutPerStep": 60000,
+		"retryFailedSteps": true,
+		"maxRetries": 3,
+		"delayBetweenSteps": 1000,
+		"delayBetweenWorkflows": 5000
+	},
+
+	"selfHealing": {
+		"enabled": true,
+		"strategies": [
+			"retry-with-wait",
+			"find-alternative-selector",
+			"use-alternative-method",
+			"navigate-via-different-path",
+			"restart-session",
+			"reset-to-known-state"
+		],
+		"maxHealingAttempts": 5,
+		"healingTimeout": 30000
+	},
+
+	"discovery": {
+		"recordDiscoveries": true,
+		"updatePOMDocumentation": true,
+		"generateBugReports": true,
+		"createGitHubIssues": false
+	},
+
+	"testGeneration": {
+		"enabled": true,
+		"outputDirectory": "test/e2e/tests/sailor-generated",
+		"filenamePattern": "{workflow-name}.test.ts",
+		"includeComments": true,
+		"includePOMReferences": true
+	},
+
+	"reporting": {
+		"enabled": true,
+		"outputDirectory": "test/e2e/sailor-mode/reports",
+		"format": "html",
+		"includeScreenshots": true,
+		"includeVideos": false,
+		"includeTraces": false
+	},
+
+	"recording": {
+		"enabled": true,
+		"mode": "full",
+		"outputDirectory": "test/e2e/sailor-mode/recordings",
+		"screenshots": {
+			"enabled": true,
+			"intervalSeconds": 2,
+			"captureOnStep": true,
+			"captureOnError": true,
+			"captureOnDiscovery": true,
+			"fullPage": true,
+			"quality": 90
+		},
+		"video": {
+			"enabled": true,
+			"fps": 2,
+			"format": "mp4",
+			"quality": "medium"
+		},
+		"traces": {
+			"enabled": true,
+			"screenshots": true,
+			"snapshots": true
+		},
+		"annotations": {
+			"enabled": true,
+			"showStepNumbers": true,
+			"showTimestamps": true,
+			"highlightElements": true,
+			"showMousePosition": false
+		},
+		"timeline": {
+			"enabled": true,
+			"includeScreenshots": true,
+			"includePageObjects": true,
+			"includeTimings": true
+		}
+	},
+
+	"safety": {
+		"maxExecutionTime": 7200000,
+		"maxMemoryUsage": 4096,
+		"gracefulShutdown": true,
+		"checkpointInterval": 300000,
+		"canResumeFromCheckpoint": true
+	},
+
+	"pomIntegration": {
+		"documentationPath": "/Users/rodrigosilvaferreira/POSITRON_POM_DOCUMENTATION.md",
+		"autoUpdateDocumentation": true,
+		"backupBeforeUpdate": true,
+		"validatePOMsBeforeUse": true
+	},
+
+	"logging": {
+		"level": "info",
+		"file": "test/e2e/sailor-mode/logs/sailor.log",
+		"console": true,
+		"includeTimestamps": true,
+		"includeStepDetails": true
+	},
+
+	"checkpoints": {
+		"enabled": true,
+		"directory": "test/e2e/sailor-mode/checkpoints",
+		"keepLast": 5
+	}
+}
